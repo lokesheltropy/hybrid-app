@@ -4,6 +4,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 // Import for iOS features.
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -35,16 +36,23 @@ class _WebViewAppState extends State<WebViewApp> {
       params = const PlatformWebViewControllerCreationParams();
     }
 
-    controller = WebViewController.fromPlatformCreationParams(params);
+    controller = WebViewController.fromPlatformCreationParams(params,
+        onPermissionRequest: (request) {
+      request.grant();
+    });
 // ···
     if (controller.platform is AndroidWebViewController) {
       AndroidWebViewController.enableDebugging(true);
       (controller.platform as AndroidWebViewController)
           .setMediaPlaybackRequiresUserGesture(false);
+      (controller.platform as AndroidWebViewController)
+          .setJavaScriptMode(JavaScriptMode.unrestricted);
+      Permission.camera.request();
+      Permission.microphone.request();
     }
 
     controller.loadRequest(
-      Uri.parse('https://google.com'),
+      Uri.parse('https://demo.dev-sandbox2-eltropy.com/mycu/'),
     );
   }
 
